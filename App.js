@@ -1,17 +1,16 @@
-import { Text, View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
-import LoginScreen from "./screens/LoginScreen";
-import RegisterScreen from "./screens/RegisterScreen.jsx";
 import SplashScreen from "./screens/SplashScreen";
+import { SessionProvider } from "./contexts";
+import { Navigation } from "./navigation";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-const Stack = createNativeStackNavigator();
+const queryClient = new QueryClient();
 
 export default function App() {
   const [showSplash, setShowSplash] = React.useState(true);
-  const isSignedIn = false;
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -24,19 +23,10 @@ export default function App() {
   if (showSplash) return <SplashScreen />;
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {isSignedIn ? (
-          <>
-            <Stack.Screen name="Home" component={HomeScreen} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <Navigation />
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }
